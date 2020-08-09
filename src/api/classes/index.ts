@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import classes from './classes';
+import { create } from './controller';
 
 const router = Router();
 
-router.use('/classes', classes);
+router.post('/', create);
 
 export default router;

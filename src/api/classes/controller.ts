@@ -14,7 +14,7 @@ export const index = async (request: Request, response: Response) => {
   if (!week_day || !subject || !time) {
     return response
       .status(400)
-      .json({ error: 'Missing filters.' })
+      .json({ error: 'Missing required filters.' })
   }
 
   const timeInMinutes = hourToMinutes(time as string)
@@ -32,7 +32,8 @@ export const index = async (request: Request, response: Response) => {
     .join('users', 'classes.user_id', '=', 'users.id')
     .select(['classes.*', 'users.*']); // inner join
 
-  return response.json(classes);
+  return response
+    .json(classes);
 }
 
 export const create = async (request: Request, response: Response) => {
@@ -63,13 +64,14 @@ export const create = async (request: Request, response: Response) => {
         to: hourToMinutes(item.to),
       }));
 
-    await trx('class_schedule')
+    const [id] = await trx('class_schedule')
       .insert(classSchedule);
 
     await trx.commit();
+
     return response
       .status(201)
-      .send('teste');
+      .send({ id });
 
   } catch (err) {
     await trx.rollback();

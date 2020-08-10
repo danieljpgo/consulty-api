@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { create, index } from './controller';
+import { create, count } from './controller';
 
 const router = Router();
 
-router.get('/', index);
+router.get('/count', count);
 router.post('/', create);
 
 export default router;

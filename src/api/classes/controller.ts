@@ -19,21 +19,27 @@ export const index = async (request: Request, response: Response) => {
 
   const timeInMinutes = hourToMinutes(time as string)
 
-  const classes = await db('classes')
-    .whereExists(function () {
-      this.select('class_schedule.*')
-        .from('class_schedule')
-        .whereRaw('`class_schedule`.`class_id` = `classes`.`id`')
-        .whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)])
-        .whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes])
-        .whereRaw('`class_schedule`.`to` > ??', [timeInMinutes])
-    })
-    .where('classes.subject', '=', subject as string)
-    .join('users', 'classes.user_id', '=', 'users.id')
-    .select(['classes.*', 'users.*']); // inner join
+  try {
+    const classes = await db('classes')
+      .whereExists(function () {
+        this.select('class_schedule.*')
+          .from('class_schedule')
+          .whereRaw('`class_schedule`.`class_id` = `classes`.`id`')
+          .whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)])
+          .whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes])
+          .whereRaw('`class_schedule`.`to` > ??', [timeInMinutes])
+      })
+      .where('classes.subject', '=', subject as string)
+      .join('users', 'classes.user_id', '=', 'users.id')
+      .select(['classes.*', 'users.*']); // inner join
 
-  return response
-    .json(classes);
+    return response
+      .json(classes);
+  } catch (e) {
+    return response
+      .status(400)
+      .json({ error: e })
+  }
 }
 
 export const create = async (request: Request, response: Response) => {

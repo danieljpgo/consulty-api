@@ -11,25 +11,29 @@ interface ScheduleItem {
 export const index = async (request: Request, response: Response) => {
   const { week_day, subject, time } = request.query;
 
-  if (!week_day || !subject || !time) {
-    return response
-      .status(400)
-      .json({ error: 'Missing required filters.' })
-  }
-
-  const timeInMinutes = hourToMinutes(time as string)
+  const timeInMinutes = time && hourToMinutes(time as string)
 
   try {
     const classes = await db('classes')
-      .whereExists(function () {
-        this.select('class_schedule.*')
+      .whereExists((builder) => {
+        builder
+          .select('class_schedule.*')
           .from('class_schedule')
           .whereRaw('`class_schedule`.`class_id` = `classes`.`id`')
-          .whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)])
-          .whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes])
-          .whereRaw('`class_schedule`.`to` > ??', [timeInMinutes])
+
+        if (week_day) {
+          builder.whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)])
+        }
+        if (timeInMinutes) {
+          builder.whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes])
+          builder.whereRaw('`class_schedule`.`to` > ??', [timeInMinutes])
+        }
       })
-      .where('classes.subject', '=', subject as string)
+      .where((builder) => {
+        if (subject) {
+          builder.where('classes.subject', '=', subject as string)
+        }
+      })
       .join('users', 'classes.user_id', '=', 'users.id')
       .select(['classes.*', 'users.*']); // inner join
 

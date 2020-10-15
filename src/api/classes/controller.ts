@@ -11,7 +11,7 @@ interface ScheduleItem {
 export const index = async (request: Request, response: Response) => {
   const { week_day, subject, time } = request.query;
 
-  const timeInMinutes = time && hourToMinutes(time as string)
+  const timeInMinutes = time && hourToMinutes(time as string);
 
   try {
     const classes = await db('classes')
@@ -19,32 +19,33 @@ export const index = async (request: Request, response: Response) => {
         builder
           .select('class_schedule.*')
           .from('class_schedule')
-          .whereRaw('`class_schedule`.`class_id` = `classes`.`id`')
+          .whereRaw('`class_schedule`.`class_id` = `classes`.`id`');
 
         if (week_day) {
-          builder.whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)])
+          builder.whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)]);
         }
         if (timeInMinutes) {
-          builder.whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes])
-          builder.whereRaw('`class_schedule`.`to` > ??', [timeInMinutes])
+          builder.whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes]);
+          builder.whereRaw('`class_schedule`.`to` > ??', [timeInMinutes]);
         }
       })
       .where((builder) => {
         if (subject) {
-          builder.where('classes.subject', '=', subject as string)
+          builder
+            .where('classes.subject', '=', subject as string);
         }
       })
       .join('users', 'classes.user_id', '=', 'users.id')
-      .select(['classes.*', 'users.*']); // inner join
+      .select(['classes.*', 'users.*']);
 
     return response
       .json(classes);
   } catch (e) {
     return response
       .status(400)
-      .json({ error: e })
+      .json({ error: e });
   }
-}
+};
 
 export const create = async (request: Request, response: Response) => {
   const {
@@ -61,10 +62,12 @@ export const create = async (request: Request, response: Response) => {
 
   try {
     const [user_id] = await trx('users')
-      .insert({ name, avatar, whatsapp, bio })
+      .insert({
+        name, avatar, whatsapp, bio,
+      });
 
     const [class_id] = await trx('classes')
-      .insert({ subject, cost, user_id })
+      .insert({ subject, cost, user_id });
 
     const classSchedule = schedule
       .map((item: ScheduleItem) => ({
@@ -82,11 +85,10 @@ export const create = async (request: Request, response: Response) => {
     return response
       .status(201)
       .send({ id });
-
   } catch (err) {
     await trx.rollback();
     return response
       .status(400)
-      .json({ error: 'Unexpected error while creating new class.' })
+      .json({ error: 'Unexpected error while creating new class.' });
   }
 };

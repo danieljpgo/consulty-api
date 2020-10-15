@@ -1,7 +1,6 @@
 import express, { Router } from 'express';
 import cors from 'cors';
 
-
 export default (routes: Router) => {
   const app = express();
 
@@ -10,4 +9,4 @@ export default (routes: Router) => {
   app.use(routes);
 
   return app;
-}
+};

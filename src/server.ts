@@ -1,5 +1,5 @@
 import express from './services/express';
-import api from './api'
+import api from './api';
 import config from './config';
 
 const { port } = config;

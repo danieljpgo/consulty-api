@@ -9,8 +9,8 @@ export const create = async (request: Request, response: Response) => {
 
   return response
     .status(201)
-    .json({ id })
-}
+    .json({ id });
+};
 
 export const count = async (request: Request, response: Response) => {
   const [totalConnections] = await db('connections')
@@ -19,5 +19,5 @@ export const count = async (request: Request, response: Response) => {
   const { total } = totalConnections;
 
   return response
-    .json({ total })
-}
+    .json({ total });
+};

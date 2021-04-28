@@ -105,7 +105,7 @@ yarn knex:migrate
 // start the application
 yarn start
 ```
-If you don't have SQLite 3, run:
+If you don't have SQLite3, run:
 ```bash
 sudo apt install sqlite3
 ```

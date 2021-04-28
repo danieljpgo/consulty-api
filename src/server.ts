@@ -1,9 +1,6 @@
-import express from './services/express';
+import { Express } from './services/express';
+import { config } from './config';
 import api from './api';
-import config from './config';
 
-const { port } = config;
-
-const app = express(api);
-
-app.listen(port);
+const app = Express(api);
+app.listen(config.port);

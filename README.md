@@ -10,7 +10,7 @@
     </div>
 </h3>
 
-<h1 align="left">Consulty Api</h1>
+<h1 align="left">Consulty API</h1>
 
 <p align="left">
    <a href="https://github.com/danieljpgo">
@@ -82,20 +82,20 @@ The main technologies used to develop the project were:
 
 ## Getting Started
 First of all, you may clone this project:
-```
+```bash
 git clone https://github.com/danieljpgo/consulty-api.git
 ```
 
-Use your machine's ip in the config.ts file:
-```
+Configure which port you want to run in the config.ts file:
+```ts
 const config = {
   port: 3333,
-  adress: 'http://192.168.15.8:' // change here
+  adress: 'http://localhost:'
 }
 ```
 
 Run the following scripts in order to execute the application:
-```
+```bash
 // install dependencies
 yarn install
 
@@ -105,6 +105,14 @@ yarn knex:migrate
 // start the application
 yarn start
 ```
+If you don't have SQLite 3, run:
+```bash
+sudo apt install sqlite3
+```
+Finally, access the API documentation:
+
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=Consulty%20API&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fdanieljpgo%2Fconsulty-api%2Fmaster%2F.github%2Fdocs.json)
+
 
 ## License
 This project is under the [MIT license](https://github.com/danieljpgo/consulty-api/blob/master/LICENSE).

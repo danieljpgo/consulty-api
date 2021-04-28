@@ -22,7 +22,10 @@
                 "ts": "never",
                 "tsx": "never"
             }
-        ]
+        ],
+        "camelcase": "off",
+        "import/prefer-default-export": "off",
+        "@typescript-eslint/camelcase": "off"
     },
     "settings": {
         "import/resolver": {

@@ -1,8 +1,8 @@
 {
-  "name": "proffy-api",
+  "name": "consulty-api",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://github.com/danieljpgo/proffy-api.git",
+  "repository": "https://github.com/danieljpgo/consulty-api.git",
   "author": "Daniel Jorge <djpgonzaga@gmail.com>",
   "license": "MIT",
   "scripts": {

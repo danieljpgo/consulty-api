@@ -1,5 +1,6 @@
-export default function hourToMinutes(time: string) {
+export const hourToMinutes = (time: string | number) => {
   const [hour, minutes] = time
+    .toString()
     .split(':')
     .map(Number);
 

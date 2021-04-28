@@ -1,23 +1,36 @@
-import { Response, Request } from 'express';
-import db from '../../database/connection';
+import type { Response, Request, NextFunction } from 'express';
+import { countConnection, createConnection, getConnections } from './service';
 
-export const create = async (request: Request, response: Response) => {
-  const { user_id } = request.body;
-
-  const [id] = await db('connections')
-    .insert({ user_id });
-
-  return response
-    .status(201)
-    .json({ id });
+export const index = async (_: Request, response: Response, next: NextFunction) => {
+  try {
+    const connections = await getConnections();
+    return response
+      .json(connections);
+  } catch (error) {
+    return next(error);
+  }
 };
 
-export const count = async (request: Request, response: Response) => {
-  const [totalConnections] = await db('connections')
-    .count('* as total');
+export const count = async (_: Request, response: Response, next: NextFunction) => {
+  try {
+    const total = await countConnection();
 
-  const { total } = totalConnections;
+    return response
+      .json(total);
+  } catch (error) {
+    return next(error);
+  }
+};
 
-  return response
-    .json({ total });
+export const create = async (request: Request, response: Response, next: NextFunction) => {
+  const { user_id } = request.body;
+  try {
+    const id = await createConnection(user_id);
+
+    return response
+      .status(201)
+      .json(id);
+  } catch (error) {
+    return next(error);
+  }
 };

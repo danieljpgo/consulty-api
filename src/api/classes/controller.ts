@@ -1,94 +1,26 @@
-import { Response, Request } from 'express';
-import db from '../../database/connection';
-import hourToMinutes from '../../utils/hourToMinutes';
+import type { Response, Request, NextFunction } from 'express';
+import type { ClassesParams } from './repository';
+import { createClassesWithUserSchedule, getScheduleClasses } from './service';
 
-interface ScheduleItem {
-  week_day: number,
-  from: string,
-  to: string,
-}
-
-export const index = async (request: Request, response: Response) => {
-  const { week_day, subject, time } = request.query;
-
-  const timeInMinutes = time && hourToMinutes(time as string);
-
+export const index = async (
+  request: Request<{}, {}, {}, ClassesParams>, response: Response, next: NextFunction,
+) => {
   try {
-    const classes = await db('classes')
-      .whereExists((builder) => {
-        builder
-          .select('class_schedule.*')
-          .from('class_schedule')
-          .whereRaw('`class_schedule`.`class_id` = `classes`.`id`');
-
-        if (week_day) {
-          builder.whereRaw('`class_schedule`.`week_day` = ??', [Number(week_day)]);
-        }
-        if (timeInMinutes) {
-          builder.whereRaw('`class_schedule`.`from` <= ??', [timeInMinutes]);
-          builder.whereRaw('`class_schedule`.`to` > ??', [timeInMinutes]);
-        }
-      })
-      .where((builder) => {
-        if (subject) {
-          builder
-            .where('classes.subject', '=', subject as string);
-        }
-      })
-      .join('users', 'classes.user_id', '=', 'users.id')
-      .select(['classes.*', 'users.*']);
-
+    const scheduleClasses = await getScheduleClasses(request.query);
     return response
-      .json(classes);
-  } catch (e) {
-    return response
-      .status(400)
-      .json({ error: e });
+      .json(scheduleClasses);
+  } catch (error) {
+    return next(error);
   }
 };
 
-export const create = async (request: Request, response: Response) => {
-  const {
-    name,
-    avatar,
-    whatsapp,
-    bio,
-    subject,
-    cost,
-    schedule,
-  } = request.body;
-
-  const trx = await db.transaction();
-
+export const create = async (request: Request, response: Response, next: NextFunction) => {
   try {
-    const [user_id] = await trx('users')
-      .insert({
-        name, avatar, whatsapp, bio,
-      });
-
-    const [class_id] = await trx('classes')
-      .insert({ subject, cost, user_id });
-
-    const classSchedule = schedule
-      .map((item: ScheduleItem) => ({
-        class_id,
-        week_day: item.week_day,
-        from: hourToMinutes(item.from),
-        to: hourToMinutes(item.to),
-      }));
-
-    const [id] = await trx('class_schedule')
-      .insert(classSchedule);
-
-    await trx.commit();
-
+    const classes = await createClassesWithUserSchedule(request.body);
     return response
       .status(201)
-      .send({ id });
-  } catch (err) {
-    await trx.rollback();
-    return response
-      .status(400)
-      .json({ error: 'Unexpected error while creating new class.' });
+      .send(classes);
+  } catch (error) {
+    return next(error);
   }
 };

@@ -1,12 +1,8 @@
-import express, { Router } from 'express';
+import type { Router } from 'express';
+import express from 'express';
 import cors from 'cors';
 
-export default (routes: Router) => {
-  const app = express();
-
-  app.use(cors());
-  app.use(express.json());
-  app.use(routes);
-
-  return app;
-};
+export const Express = (routes: Router) => express()
+  .use(cors())
+  .use(express.json())
+  .use(routes);

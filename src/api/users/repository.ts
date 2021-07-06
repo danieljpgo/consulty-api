@@ -14,3 +14,10 @@ export const index = (trx?: Transaction) => {
   return db<User, User[]>('users')
     .select('*');
 };
+
+export const create = (params: any, trx?: Transaction) => {
+  const db = trx || database;
+
+  return db<User, [number]>('users')
+    .insert(params);
+};
